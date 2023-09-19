@@ -35,18 +35,22 @@ CREATE TABLE colores_elegidos_log (
     old_id_colores_e INT,
     old_id_color1 INT,
     old_id_color2 INT,
-    old_id_color3 INT
+    old_id_color3 INT,
+    new_id_color1 INT,
+    new_id_color2 INT,
+    new_id_color3 INT
 );
 
 DELIMITER //
 CREATE TRIGGER log_colores_elegidos_act
-BEFORE UPDATE ON Colores_Elegidos
+BEFORE UPDATE ON colores_elegidos
 FOR EACH ROW
 BEGIN
     INSERT INTO colores_elegidos_log
-    VALUES (NOW(), USER(), 'UPDATE',  NEW.id_colores_e, NEW.id_color1, NEW.id_color2, NEW.id_color3);
+    VALUES (NOW(), USER(), 'UPDATE',  OLD.id_colores_e, OLD.id_color1, OLD.id_color2, OLD.id_color3,
+    NEW.id_color1,NEW.id_color2,NEW.id_color3);
 END //
-
+delimiter ;
 
 -- TRIGGER QUE INSERTA EN LA TABLA USUARIOS LOG, EL ID_USUARIO, Y EL TIMESTAMP EN EL QUE SE CREO
 CREATE TABLE usuarios_log (

@@ -63,11 +63,11 @@ VALUES (1,1,7,1,1),
        (6,2,4,2,6), 
        (7,1,7,1,7), 
        (8,2,4,3,8), 
-       (9,6,2,2,9), 
+       (9,4,2,2,9), 
        (10,3,5,2,10), 
        (11,2,1,1,11), 
        (12,4,3,3,12), 
-       (13,6,9,3,13),
+       (13,3,9,3,13),
        (14,2,5,1,14),
        (15,4,2,1,15),
        (16,3,9,4,16),
@@ -123,7 +123,7 @@ VALUES (1,1,"2023-07-24 12:34:56","Pedido para ocasion especial",1),
 	   (11,5,"2023-08-18 12:48:12","Un pedido ",0),
        (12,4,"2023-09-15 12:48:12",NULL,0),
        (13,9,"2023-09-17 18:48:12","Pedido para navidad",0),
-       (14,5,"2023-10-17 22:41:12");
+       (14,5,"2023-10-17 22:41:12","Pedido",0);
        
 INSERT INTO pedidos (id_pedido,id_remera,id_orden)
 VALUES (1,1,1),
@@ -150,3 +150,8 @@ VALUES (1,1,"Excelente remera muy comoda",5,"2023-07-26 08:15:00"),
        (3,3,"Dudosa calidad de la remera",3,"2023-07-30 09:30:00"),
        (4,4,"Muy comoda y elegante",5,"2023-07-31 12:00:00"),
        (5,6,"Tremenda remera muy feliz estoy",5,"2023-08-01 13:00:00");
+
+
+
+SET SQL_safe_updates = 0;
+SET foreign_key_checks = 0;
