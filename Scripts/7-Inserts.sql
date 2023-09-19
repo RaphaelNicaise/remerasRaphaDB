@@ -1,3 +1,6 @@
+SET SQL_safe_updates = 0;
+SET foreign_key_checks = 0;
+
 INSERT INTO Cuello (cuelloObj) VALUES
   ('Cuello Redondo'),
   ('Cuello en V'),
@@ -17,12 +20,13 @@ INSERT INTO Estampado (estampadoObj) VALUES
   ('IloveParis'),
   ('Lionel Messi');
 
-INSERT INTO Talle (id_talle,talleObj) VALUES
-  (1,'S'),
+INSERT INTO Talle (id_talle,talleObj) 
+VALUES (1,'S'),
   (2,'M'),
   (3,'L'),
   (4,'XL'),
   (5,'XXL');
+  
 
 INSERT INTO Color (colorObj) VALUES
   ('Rojo'),
@@ -153,5 +157,3 @@ VALUES (1,1,"Excelente remera muy comoda",5,"2023-07-26 08:15:00"),
 
 
 
-SET SQL_safe_updates = 0;
-SET foreign_key_checks = 0;
