@@ -26,7 +26,7 @@ BEGIN
     (NEW.id_pedido, NOW(), USER());
 END //
 
--- TRIGGER encargado de auditar los update de color en los colores_elegidos con su respectiva tabla
+-- TRIGGER 2 encargado de auditar los update de color en los colores_elegidos con su respectiva tabla
 
 CREATE TABLE colores_elegidos_log (
     timestamp DATETIME,
@@ -52,7 +52,8 @@ BEGIN
 END //
 delimiter ;
 
--- TRIGGER QUE INSERTA EN LA TABLA USUARIOS LOG, EL ID_USUARIO, Y EL TIMESTAMP EN EL QUE SE CREO
+
+-- TRIGGER 3 QUE INSERTA EN LA TABLA USUARIOS LOG, EL ID_USUARIO, Y EL TIMESTAMP EN EL QUE SE CREO
 CREATE TABLE usuarios_log (
     id_usuario INT NOT NULL,
     creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -66,3 +67,6 @@ BEGIN
 	INSERT INTO usuarios_log
     (id_usuario) values (NEW.id_usuario);
 END //
+
+-- Privile Users
+

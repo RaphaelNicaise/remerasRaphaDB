@@ -59,17 +59,8 @@ JOIN usuarios u ON o.id_usuario = u.id_usuario
 JOIN contacto c ON u.id_contacto = c.id_contacto
 ORDER BY fecha_de_orden ASC);
 
--- VISTA  6
--- CANTIDAD DE ORDENES ENTREGADAS a borrar
-CREATE OR REPLACE VIEW cant_Ordenes_Entregadas AS (
-select count(*) from ordenes where entregado = true);
 
--- VISTA 7
--- CANTIDAD DE ORDENES PARA ENTREGAR a borrar
-CREATE OR REPLACE VIEW cant_Ordenes_para_entregar AS (
-select count(*) as Cantidad from ordenes where entregado = false);
-
--- VISTA 8
+-- VISTA 6
 -- CANTIDAD DE PEDIDOS POR CADA USUARIO ORDENADO DE MENOR A MAYOR
 CREATE OR REPLACE VIEW Cant_pedidos_por_usuario AS (
 SELECT concat(u.nombre,' ',u.apellido) as Nombre, count(id_pedido) as cantidadPedida FROM usuarios u 
@@ -78,7 +69,7 @@ JOIN pedidos p ON p.id_orden = o.id_orden
 group by u.id_usuario
 order by cantidadPedida desc);
 
--- VISTA  9
+-- VISTA  7
 -- CANTIDAD DE ORDENES POR USUARIO (UNA ORDEN PUEDE TENER MUCHOS PEDIDOS)
 CREATE OR REPLACE VIEW Cant_ordenes_por_usuario AS (
 SELECT concat(u.nombre,' ',u.apellido) as Nombre, count(id_orden) as cantidadOrdenes FROM usuarios u 
@@ -86,26 +77,16 @@ JOIN ordenes o ON o.id_usuario = u.id_usuario
 group by u.id_usuario
 order by cantidadOrdenes desc);
 
--- VISTA 10 cambiada a funcion
--- CANTIDAD DE REMERAS REGISTRADAS EN EL SISTEMA
-CREATE OR REPLACE VIEW Cant_remeras_registradas as (
-select count(*) as Cantidad from pedidos);
 
--- VISTA 11 
--- CANTIDAD DE REMERAS REGISTRADAS YA ENTREGADAS
-CREATE OR REPLACE VIEW Cant_remeras_entregadas as (
-select count(*) as Cantidad from pedidos p join ordenes o on p.id_orden = o.id_orden 
-where o.entregado = true); 
-
--- VISTA 12 
+-- VISTA 8
 CREATE OR REPLACE VIEW infoUsuarios as (
 	select us.id_usuario,nombre,apellido,telefono,email,codigo_postal,direccion from contacto c 
     join usuarios us on us.id_contacto = c.id_contacto
     join ubicacion u on us.id_ubicacion = u.id_ubicacion);
     
--- VISTA 13
+-- VISTA 9
     
-    CREATE VIEW TOP_ESTAMPADOS AS (
+CREATE OR REPLACE VIEW top_estampados AS (
 SELECT estampadoObj as estampado,count(r.id_estampado) as Cantidad 
 FROM remera r join estampado e on r.id_estampado = e.id_estampado
 group by (estampadoObj) order by count(r.id_estampado) desc)

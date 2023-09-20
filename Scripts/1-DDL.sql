@@ -1,3 +1,4 @@
+DROP SCHEMA IF EXISTS remerasrapha2;
 CREATE SCHEMA remerasRapha2;
 
 USE remerasRapha2;

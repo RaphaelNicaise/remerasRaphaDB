@@ -121,9 +121,7 @@ BEGIN
     
     INSERT INTO Remera (id_cuello, id_estampado, id_talle, id_colores_e) 
     VALUES (cuello_id, estampado_id, talle_id, colores_elegidos_id);
-    SET remera_id = LAST_INSERT_ID();
     
-    SELECT concat('Remera agregada correctamente: id_remera ', remera_id) as Comentario;
 END //
 
 -- SP 6
@@ -155,11 +153,26 @@ BEGIN
 	END IF;
 
 	INSERT INTO Pedidos (id_remera, id_orden) VALUES (id_remera, orden_id);
-	SET mensaje = CONCAT('Pedido agregado correctamente en la ID de Orden: ', orden_id);
-	SELECT mensaje AS comentario;
 END //
 
--- SP 7
+--  SP 7 STORED PROCEDURE QUE LLAMA A add_pedido y add_remera a la vez
+
+DELIMITER //
+CREATE PROCEDURE add_remera_a_pedido (
+IN usuario_id_ INT,IN estampado_id_ INT,IN talle_id_ INT,
+IN cuello_id_ INT, IN color1_id_ INT,IN color2_id_ INT,IN color3_id_ INT
+) 
+BEGIN
+	DECLARE nueva_id_remera INT;
+	CALL add_remera(cuello_id_,estampado_id_,talle_id_,color1_id_,color2_id_,color3_id_);
+    SET nueva_id_remera = LAST_INSERT_ID();
+    
+    CALL add_pedido (usuario_id_,nueva_id_remera);
+    
+    SELECT concat('La id_remera: ',nueva_id_remera,' a sido pedida por el usuario: ',usuario_id_) as Message;
+END //
+
+-- SP 8
 -- PROCEDURE QUE TOMA COMO PARAMETRO A UNA ID DE REMERA Y LE ACTUALIZA LOS COLORES (EN CASO DE NO QUERER PONER OTRO COLOR SETEAR NULL)
 delimiter //
 CREATE PROCEDURE edit_Colores_Elegidos 
@@ -176,14 +189,6 @@ BEGIN
     limit 1;
 END //
 
--- SP 8
--- DEVUELVE EL TOTAL DE REMERAS ENTREGADAS
-DELIMITER //
-CREATE PROCEDURE total_remeras_entregadas(out total_remeras_v INTEGER)
-BEGIN
-	SELECT COUNT(*) INTO total_remeras_v FROM pedidos p 
-    join ordenes o ON p.id_orden = o.id_orden where o.entregado = TRUE;
-END //
 
 -- SP 9
 -- Obtiene el total de ordenes por id_usuario
