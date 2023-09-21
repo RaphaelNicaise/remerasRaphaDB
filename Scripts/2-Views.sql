@@ -89,4 +89,7 @@ CREATE OR REPLACE VIEW infoUsuarios as (
 CREATE OR REPLACE VIEW top_estampados AS (
 SELECT estampadoObj as estampado,count(r.id_estampado) as Cantidad 
 FROM remera r join estampado e on r.id_estampado = e.id_estampado
-group by (estampadoObj) order by count(r.id_estampado) desc)
+group by (estampadoObj) order by count(r.id_estampado) desc);
+
+
+
