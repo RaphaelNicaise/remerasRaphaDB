@@ -68,5 +68,18 @@ BEGIN
     (id_usuario) values (NEW.id_usuario);
 END //
 
--- Privile Users
+-- TRIGGER 4
 
+CREATE TABLE log_entrega_orden (
+        id_orden INT ,
+        creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        estado varchar(10) DEFAULT 'Entregado'
+);
+
+DELIMITER //
+CREATE TRIGGER log_entrega_ordenes
+AFTER UPDATE ON ordenes
+FOR EACH ROW
+BEGIN
+	INSERT INTO log_entrega_orden (id_orden) VALUES (new.id_orden);
+END //
