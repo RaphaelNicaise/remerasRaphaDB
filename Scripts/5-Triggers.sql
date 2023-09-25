@@ -6,7 +6,7 @@
 -- CADA VEZ QUE SE INSERTE UN PEDIDO, EL TRIGGER DISPARA UN INSERT EN LOG PEDIDO CON LA INFORMACION, 
 -- Y QUE ADMINISTRADOR, O USUARIO LO EJECUTO 
 
-CREATE TABLE Pedidos_log
+CREATE TABLE IF NOT EXISTS Pedidos_log
 (
     id_pedido INT NOT NULL AUTO_INCREMENT,
     fecha_hora DATETIME NOT NULL,
@@ -16,7 +16,7 @@ CREATE TABLE Pedidos_log
 
 
 delimiter //
-CREATE TRIGGER log_pedido
+CREATE TRIGGER  log_pedido
 AFTER INSERT ON pedidos
 FOR EACH ROW
 BEGIN
@@ -55,7 +55,7 @@ delimiter ;
 
 
 -- TRIGGER 3 QUE INSERTA EN LA TABLA USUARIOS LOG, EL ID_USUARIO, Y EL TIMESTAMP EN EL QUE SE CREO
-CREATE TABLE usuarios_log (
+CREATE TABLE IF NOT EXISTS usuarios_log (
     id_usuario INT NOT NULL,
     creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -69,9 +69,10 @@ BEGIN
     (id_usuario) values (NEW.id_usuario);
 END //
 delimiter;
+
 -- TRIGGER 4
 
-CREATE TABLE log_entrega_orden (
+CREATE TABLE IF NOT EXISTS log_entrega_orden (
         id_orden INT ,
         creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         estado varchar(10) DEFAULT 'Entregado'

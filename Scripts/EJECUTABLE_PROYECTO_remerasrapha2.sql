@@ -1,35 +1,36 @@
--- DDL
+-- SCRIPT 1 DDL
+
 DROP SCHEMA IF EXISTS remerasrapha2;
 CREATE SCHEMA remerasRapha2;
 
 USE remerasRapha2;
 
 
-CREATE TABLE Cuello (
+CREATE TABLE IF NOT EXISTS Cuello (
     id_cuello INT NOT NULL AUTO_INCREMENT,
     cuelloObj VARCHAR(20) NOT NULL,
     PRIMARY KEY (id_cuello)
 );
 	
-CREATE TABLE Estampado (
+CREATE TABLE IF NOT EXISTS Estampado (
     id_estampado INT NOT NULL AUTO_INCREMENT,
     estampadoObj VARCHAR(100) NOT NULL,
     PRIMARY KEY (id_estampado)
 );
 
-CREATE TABLE Talle (
+CREATE TABLE IF NOT EXISTS Talle (
     id_talle INT NOT NULL AUTO_INCREMENT,
     talleObj VARCHAR(10) NOT NULL,
     PRIMARY KEY (id_talle)
 );
 
-CREATE TABLE Color (
+CREATE TABLE IF NOT EXISTS Color (
     id_color INT NOT NULL AUTO_INCREMENT,
     colorObj VARCHAR(40) NOT NULL,
     PRIMARY KEY (id_color)
 );
 
-CREATE TABLE Colores_Elegidos (
+CREATE TABLE IF NOT EXISTS Colores_Elegidos (
     id_colores_e INT NOT NULL AUTO_INCREMENT,
     id_color1 INT NOT NULL,
     id_color2 INT ,
@@ -43,7 +44,7 @@ CREATE TABLE Colores_Elegidos (
         REFERENCES Color (id_color)
 );
 
-CREATE TABLE Remera (
+CREATE TABLE IF NOT EXISTS Remera (
     id_remera INT NOT NULL AUTO_INCREMENT,
     id_cuello INT NOT NULL,
     id_estampado INT NOT NULL,
@@ -60,7 +61,7 @@ CREATE TABLE Remera (
         REFERENCES Colores_Elegidos (id_colores_e)
 );
 
-CREATE TABLE Ubicacion (
+CREATE TABLE IF NOT EXISTS Ubicacion (
     id_ubicacion INT NOT NULL AUTO_INCREMENT,
     codigo_postal VARCHAR(30) NOT NULL,
     direccion VARCHAR(255) NOT NULL,
@@ -68,14 +69,14 @@ CREATE TABLE Ubicacion (
     PRIMARY KEY (id_ubicacion)
 );
 
-CREATE TABLE Contacto (
+CREATE TABLE IF NOT EXISTS Contacto (
     id_contacto INT NOT NULL AUTO_INCREMENT,
     telefono VARCHAR(100),
     email VARCHAR(255),
     PRIMARY KEY (id_contacto)
 );
 
-CREATE TABLE Usuarios (
+CREATE TABLE IF NOT EXISTS Usuarios (
     id_usuario INT NOT NULL AUTO_INCREMENT,
     nombre VARCHAR(100) NOT NULL,
     apellido VARCHAR(100) NOT NULL,
@@ -88,7 +89,7 @@ CREATE TABLE Usuarios (
         REFERENCES Ubicacion (id_ubicacion)
 );
 
-CREATE TABLE Ordenes (
+CREATE TABLE IF NOT EXISTS Ordenes (
     id_orden INT NOT NULL AUTO_INCREMENT,
     id_usuario INT NOT NULL,
     fecha_de_orden DATETIME NOT NULL,
@@ -100,7 +101,7 @@ CREATE TABLE Ordenes (
     
 );
 
-CREATE TABLE Pedidos (
+CREATE TABLE IF NOT EXISTS Pedidos (
     id_pedido INT NOT NULL AUTO_INCREMENT,
     id_remera INT NOT NULL,
     id_orden INT NOT NULL,
@@ -112,7 +113,7 @@ CREATE TABLE Pedidos (
 	
 );
 
-CREATE TABLE Review (
+CREATE TABLE IF NOT EXISTS Review (
     id_review INT NOT NULL AUTO_INCREMENT,
     id_remera INT NOT NULL,
     comentario VARCHAR(255),
@@ -124,7 +125,9 @@ CREATE TABLE Review (
 
 );
 
-CREATE TABLE Pedidos_log
+-- (Aqui estan las tablas de los TRIGGERS)
+
+CREATE TABLE IF NOT EXISTS Pedidos_log
 (
     id_pedido INT NOT NULL AUTO_INCREMENT,
     fecha_hora DATETIME NOT NULL,
@@ -132,7 +135,7 @@ CREATE TABLE Pedidos_log
     PRIMARY KEY (id_pedido)
 );
 
-CREATE TABLE colores_elegidos_log (
+CREATE TABLE IF NOT EXISTS colores_elegidos_log (
     timestamp DATETIME,
     usuario VARCHAR(255),
     action VARCHAR(50),
@@ -145,12 +148,18 @@ CREATE TABLE colores_elegidos_log (
     new_id_color3 INT
 );
 
-CREATE TABLE usuarios_log (
+CREATE TABLE IF NOT EXISTS usuarios_log (
     id_usuario INT NOT NULL,
     creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+       
+CREATE TABLE IF NOT EXISTS log_entrega_orden (
+        id_orden INT ,
+        creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        estado varchar(10) DEFAULT 'Entregado'
+);
 
--- VIEWS
+-- SCRIPT 2 VIEWS
 
 -- VISTA 1
 -- ESTA VISTA DEVUELVE TODO EL DISEÑO ADEMAS DE LOS COLORES DE LA REMERA
@@ -245,9 +254,8 @@ SELECT estampadoObj as estampado,count(r.id_estampado) as Cantidad
 FROM remera r join estampado e on r.id_estampado = e.id_estampado
 group by (estampadoObj) order by count(r.id_estampado) desc);
 
--- FUNCTIONS
 
--- FUNCIONES
+-- SCRIPT 3 FUNCTIONS
 
 -- Funcion que devuelve la cantidad de ventas por estampado
 DROP FUNCTION IF EXISTS cantVentas_x_estampado;
@@ -355,9 +363,7 @@ BEGIN
     RETURN remeras_para_entregada;
 END $$
 
--- STORED PROCEDURES 
-
--- STORED PROCEDURES 
+-- SCRIPT 4 STORED PROCEDURES 
 
 -- SP 1
 -- Colocas una id de orden y confirma su entrega, si esta ya fue entregada, devolvera que ya fue entregada valga la redundancia.
@@ -469,17 +475,32 @@ END $$
 DELIMITER //
 CREATE PROCEDURE add_remera(
     IN cuello_id INT, IN estampado_id INT, IN talle_id INT,
-    IN color1_id INT, IN color2_id INT, IN color3_id INT )
+    IN color1_id INT, IN color2_id char(2), IN color3_id char(2))
 BEGIN
     DECLARE remera_id INT;
     DECLARE colores_elegidos_id INT;
+    DECLARE color2 INT;
+    DECLARE color3 INT;
+    
+    IF color2_id like '' THEN
+		SET color2 = NULL;
+	ELSE SET color2 = color2_id;
+    END IF;
+    
+     IF color3_id like '' THEN
+		SET color3 = NULL;
+	ELSE SET color3 = color3_id;
+    END IF;
     
     INSERT INTO Colores_Elegidos (id_color1, id_color2, id_color3) 
-    VALUES (color1_id, IFNULL(color2_id, NULL), IFNULL(color3_id, NULL));
+    VALUES (color1_id, color2, color3);
     SET colores_elegidos_id = LAST_INSERT_ID();
     
     INSERT INTO Remera (id_cuello, id_estampado, id_talle, id_colores_e) 
     VALUES (cuello_id, estampado_id, talle_id, colores_elegidos_id);
+    SET remera_id = LAST_INSERT_ID();
+    
+    SELECT 	concat('id_remera: ',remera_id,' agregada correctamente') as Mensaje;
     
 END //
 
@@ -519,8 +540,7 @@ END //
 DELIMITER //
 CREATE PROCEDURE add_remera_a_pedido (
 IN usuario_id_ INT,IN estampado_id_ INT,IN talle_id_ INT,
-IN cuello_id_ INT, IN color1_id_ INT,IN color2_id_ INT,IN color3_id_ INT
-) 
+IN cuello_id_ INT, IN color1_id_ INT,IN color2_id_ char(2),IN color3_id_ char(2)) 
 BEGIN
 	DECLARE nueva_id_remera INT;
 	CALL add_remera(cuello_id_,estampado_id_,talle_id_,color1_id_,color2_id_,color3_id_);
@@ -528,18 +548,32 @@ BEGIN
     
     CALL add_pedido (usuario_id_,nueva_id_remera);
     
-    SELECT concat('La id_remera: ',nueva_id_remera,' a sido pedida por el usuario: ',usuario_id_) as Message;
+    SELECT concat('La id_remera: ',nueva_id_remera,
+    ' a sido creada y pedida por el usuario: ',usuario_id_) as Message;
 END //
 
 -- SP 8
 -- PROCEDURE QUE TOMA COMO PARAMETRO A UNA ID DE REMERA Y LE ACTUALIZA LOS COLORES (EN CASO DE NO QUERER PONER OTRO COLOR SETEAR NULL)
 delimiter //
 CREATE PROCEDURE edit_Colores_Elegidos 
-(IN remera_id INT,IN color1_id INT,IN color2_id INT,IN color3_id INT)
+(IN remera_id INT,IN color1_id INT,IN color2_id char(2),IN color3_id char(2))
 BEGIN
 
+	DECLARE color2 INT;
+    DECLARE color3 INT;
+    
+    IF color2_id like '' THEN
+		SET color2 = NULL;
+	ELSE SET color2 = color2_id;
+    END IF;
+    
+     IF color3_id like '' THEN
+		SET color3 = NULL;
+	ELSE SET color3 = color3_id;
+    END IF;
+
 	UPDATE colores_elegidos co join remera r on r.id_colores_e = co.id_colores_e 
-    set id_color1 = color1_id,id_color2 = color2_id,id_color3 = color3_id 
+    set id_color1 = color1_id,id_color2 = color2,id_color3 = color3 
     where co.id_colores_e = remera_id;
     select concat('La id_remera: ',remera_id,' a sido modificada a los colores: ') as Comentario,
     color1_id as id_color1,
@@ -679,18 +713,14 @@ BEGIN
     where id_usuario = usuario_id;
 END //
 
--- TRIGGERS 
+-- SCRIPT 5 TRIGGERS 
 
 -- TRIGGER 1
 
 -- CADA VEZ QUE SE INSERTE UN PEDIDO, EL TRIGGER DISPARA UN INSERT EN LOG PEDIDO CON LA INFORMACION, 
 -- Y QUE ADMINISTRADOR, O USUARIO LO EJECUTO 
-
-
-
-
 delimiter //
-CREATE TRIGGER log_pedido
+CREATE TRIGGER  log_pedido
 AFTER INSERT ON pedidos
 FOR EACH ROW
 BEGIN
@@ -700,9 +730,8 @@ BEGIN
     (NEW.id_pedido, NOW(), USER());
 END //
 
+
 -- TRIGGER 2 encargado de auditar los update de color en los colores_elegidos con su respectiva tabla
-
-
 
 DELIMITER //
 CREATE TRIGGER log_colores_elegidos_act
@@ -713,11 +742,9 @@ BEGIN
     VALUES (NOW(), USER(), 'UPDATE',  OLD.id_colores_e, OLD.id_color1, OLD.id_color2, OLD.id_color3,
     NEW.id_color1,NEW.id_color2,NEW.id_color3);
 END //
-delimiter ;
 
 
 -- TRIGGER 3 QUE INSERTA EN LA TABLA USUARIOS LOG, EL ID_USUARIO, Y EL TIMESTAMP EN EL QUE SE CREO
-
 
 DELIMITER //
 CREATE TRIGGER log_usuarios
@@ -728,7 +755,21 @@ BEGIN
     (id_usuario) values (NEW.id_usuario);
 END //
 
--- PRIVILEGE USERS
+
+-- TRIGGER 4
+
+DELIMITER //
+CREATE TRIGGER log_entrega_ordenes
+AFTER UPDATE ON ordenes
+FOR EACH ROW
+BEGIN
+	IF OLD.entregado <> NEW.entregado THEN
+	INSERT INTO log_entrega_orden (id_orden) VALUES (new.id_orden);
+    END IF;
+END //
+DELIMITER ;
+
+-- SCRIPT 6 PrivilegesUsers
 
 drop user if exists administracion@localhost;
 drop user if exists fabrica_remeras@localhost;
@@ -754,7 +795,7 @@ SHOW GRANTS FOR fabrica_remeras@localhost; */
 /* revoke select on *.* from USUARIO1@localhost;
 revoke select,insert,update on *.* from USUARIO2@localhost; */
 
--- INSERTS
+-- SCRIPT 7 INSERTS
 
 SET SQL_safe_updates = 0;
 SET foreign_key_checks = 0;
@@ -915,10 +956,3 @@ VALUES (1,1,"Excelente remera muy comoda",5,"2023-07-26 08:15:00"),
 
 
 
-
-
-
-
-
-
-       
