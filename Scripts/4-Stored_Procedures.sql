@@ -175,8 +175,7 @@ END //
 DELIMITER //
 CREATE PROCEDURE add_remera_a_pedido (
 IN usuario_id_ INT,IN estampado_id_ INT,IN talle_id_ INT,
-IN cuello_id_ INT, IN color1_id_ INT,IN color2_id_ INT,IN color3_id_ INT
-) 
+IN cuello_id_ INT, IN color1_id_ INT,IN color2_id_ char(2),IN color3_id_ char(2)) 
 BEGIN
 	DECLARE nueva_id_remera INT;
 	CALL add_remera(cuello_id_,estampado_id_,talle_id_,color1_id_,color2_id_,color3_id_);
@@ -184,7 +183,8 @@ BEGIN
     
     CALL add_pedido (usuario_id_,nueva_id_remera);
     
-    SELECT concat('La id_remera: ',nueva_id_remera,' a sido pedida por el usuario: ',usuario_id_) as Message;
+    SELECT concat('La id_remera: ',nueva_id_remera,
+    ' a sido creada y pedida por el usuario: ',usuario_id_) as Message;
 END //
 
 -- SP 8
