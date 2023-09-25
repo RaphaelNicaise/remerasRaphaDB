@@ -191,7 +191,7 @@ END //
 -- PROCEDURE QUE TOMA COMO PARAMETRO A UNA ID DE REMERA Y LE ACTUALIZA LOS COLORES (EN CASO DE NO QUERER PONER OTRO COLOR SETEAR NULL)
 delimiter //
 CREATE PROCEDURE edit_Colores_Elegidos 
-(IN remera_id INT,IN color1_id INT,IN color2_id INT,IN color3_id INT)
+(IN remera_id INT,IN color1_id INT,IN color2_id char(2),IN color3_id char(2))
 BEGIN
 
 	UPDATE colores_elegidos co join remera r on r.id_colores_e = co.id_colores_e 
