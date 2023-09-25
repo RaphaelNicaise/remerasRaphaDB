@@ -26,9 +26,10 @@ BEGIN
     (NEW.id_pedido, NOW(), USER());
 END //
 
+delimiter;
 -- TRIGGER 2 encargado de auditar los update de color en los colores_elegidos con su respectiva tabla
 
-CREATE TABLE colores_elegidos_log (
+CREATE TABLE IF NOT EXISTS colores_elegidos_log (
     timestamp DATETIME,
     usuario VARCHAR(255),
     action VARCHAR(50),
@@ -67,7 +68,7 @@ BEGIN
 	INSERT INTO usuarios_log
     (id_usuario) values (NEW.id_usuario);
 END //
-
+delimiter;
 -- TRIGGER 4
 
 CREATE TABLE log_entrega_orden (
