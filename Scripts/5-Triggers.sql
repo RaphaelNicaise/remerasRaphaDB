@@ -81,5 +81,7 @@ CREATE TRIGGER log_entrega_ordenes
 AFTER UPDATE ON ordenes
 FOR EACH ROW
 BEGIN
+	IF OLD.entregado <> NEW.entregado THEN
 	INSERT INTO log_entrega_orden (id_orden) VALUES (new.id_orden);
+    END IF;
 END //

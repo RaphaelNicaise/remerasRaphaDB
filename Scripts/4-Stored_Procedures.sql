@@ -110,17 +110,32 @@ END $$
 DELIMITER //
 CREATE PROCEDURE add_remera(
     IN cuello_id INT, IN estampado_id INT, IN talle_id INT,
-    IN color1_id INT, IN color2_id INT, IN color3_id INT )
+    IN color1_id INT, IN color2_id char(2), IN color3_id char(2))
 BEGIN
     DECLARE remera_id INT;
     DECLARE colores_elegidos_id INT;
+    DECLARE color2 INT;
+    DECLARE color3 INT;
+    
+    IF color2_id like '' THEN
+		SET color2 = NULL;
+	ELSE SET color2 = color2_id;
+    END IF;
+    
+     IF color3_id like '' THEN
+		SET color3 = NULL;
+	ELSE SET color3 = color3_id;
+    END IF;
     
     INSERT INTO Colores_Elegidos (id_color1, id_color2, id_color3) 
-    VALUES (color1_id, IFNULL(color2_id, NULL), IFNULL(color3_id, NULL));
+    VALUES (color1_id, color2, color3);
     SET colores_elegidos_id = LAST_INSERT_ID();
     
     INSERT INTO Remera (id_cuello, id_estampado, id_talle, id_colores_e) 
     VALUES (cuello_id, estampado_id, talle_id, colores_elegidos_id);
+    SET remera_id = LAST_INSERT_ID();
+    
+    SELECT 	concat('id_remera: ',remera_id,' agregada correctamente') as Mensaje;
     
 END //
 
