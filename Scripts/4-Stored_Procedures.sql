@@ -194,8 +194,21 @@ CREATE PROCEDURE edit_Colores_Elegidos
 (IN remera_id INT,IN color1_id INT,IN color2_id char(2),IN color3_id char(2))
 BEGIN
 
+	DECLARE color2 INT;
+    DECLARE color3 INT;
+    
+    IF color2_id like '' THEN
+		SET color2 = NULL;
+	ELSE SET color2 = color2_id;
+    END IF;
+    
+     IF color3_id like '' THEN
+		SET color3 = NULL;
+	ELSE SET color3 = color3_id;
+    END IF;
+
 	UPDATE colores_elegidos co join remera r on r.id_colores_e = co.id_colores_e 
-    set id_color1 = color1_id,id_color2 = color2_id,id_color3 = color3_id 
+    set id_color1 = color1_id,id_color2 = color2,id_color3 = color3 
     where co.id_colores_e = remera_id;
     select concat('La id_remera: ',remera_id,' a sido modificada a los colores: ') as Comentario,
     color1_id as id_color1,
