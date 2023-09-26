@@ -87,3 +87,31 @@ BEGIN
 	INSERT INTO log_entrega_orden (id_orden) VALUES (new.id_orden);
     END IF;
 END //
+
+-- PRUEBA DE LOOPS Y CURSORES PARA LA IMPLENTEACION DE QUE CADA VEZ QUE SE ENTREGA UNA ORDEN, 
+-- TODAS SUS REMERAS SE REGISTREN EN REVIEWS 
+
+/* DELIMITER //
+CREATE TRIGGER insertar_reviews
+AFTER UPDATE ON ordenes
+FOR EACH ROW
+BEGIN
+    DECLARE i INT DEFAULT 0;
+    DECLARE remera_id INT;
+    DECLARE num_remeras INT;
+
+    IF NEW.entregado = 1 THEN
+        
+        SELECT COUNT(*) INTO num_remeras FROM Pedidos WHERE id_orden = NEW.id_orden;
+
+        
+        WHILE i < num_remeras DO
+            SELECT id_remera INTO remera_id FROM Pedidos WHERE id_orden = NEW.id_orden LIMIT i, 1;
+
+            INSERT INTO Review (id_remera, comentario, calificacion, fecha_publicacion)
+            VALUES (remera_id, '', NULL, NOW());
+
+            SET i = i + 1;
+        END WHILE;
+    END IF;
+END // */
