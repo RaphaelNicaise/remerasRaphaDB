@@ -73,18 +73,18 @@ END //
 
 -- SP 4
 -- AGREGA UN USUARIO CON SUS DATOS TAMBIEN EL LA TABLA CONTACTO Y UBICACION
-DELIMITER $$
-CREATE PROCEDURE add_usuario(
+DELIMITER //
+CREATE PROCEDURE add_usuariO(
     IN nombreNuevo VARCHAR(100),
     IN apellidoNuevo VARCHAR(100),
     IN telefonoNuevo VARCHAR(100),
     IN emailNuevo VARCHAR(255),
     IN codigo_postalNuevo VARCHAR(30),
     IN direccion VARCHAR(255))
-    
 BEGIN
 		DECLARE contacto_id INT;
 		DECLARE ubicacion_id INT;
+        DECLARE usuarioID INT;
 	IF nombreNuevo = '' OR apellidoNuevo = '' OR telefonoNuevo = '' OR emailNuevo = '' OR codigo_postalNuevo = '' OR direccion = '' THEN
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'Todos los campos son obligatorios. Por favor, complete todos los campos.';
@@ -100,10 +100,11 @@ BEGIN
 	   
 		INSERT INTO usuarios (nombre, apellido, id_contacto, id_ubicacion) 
 		VALUES (nombreNuevo, apellidoNuevo, contacto_id, ubicacion_id);
+        SET usuarioID = last_insert_id();
 		
-		SELECT 'Nuevo usuario agregado: ' AS Mensaje, nombreNuevo AS Nombre, apellidoNuevo AS Apellido;
+		SELECT concat('Nuevo usuario agregado: ',concat(nombreNuevo,' ',apellidoNuevo),' ID: ',usuarioID) as Mensaje;
     END IF;
-END $$
+END //
 
 -- SP 5
 -- AGREGA UNA REMERA CON LOS DATOS NECESARIOS (en caso de no querer agregar id_color1 y 2 setear null)

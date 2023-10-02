@@ -92,7 +92,7 @@ END //
 -- TODAS SUS REMERAS SE REGISTREN EN REVIEWS 
 -- (NO INCLUIDO EN EL PROYECTO)
 
-/* DELIMITER //
+DELIMITER //
 CREATE TRIGGER insertar_reviews
 AFTER UPDATE ON ordenes
 FOR EACH ROW
@@ -101,7 +101,7 @@ BEGIN
     DECLARE remera_id INT;
     DECLARE num_remeras INT;
 
-    IF NEW.entregado = 1 THEN
+    IF NEW.entregado = 1 AND OLD.entregado = 0 THEN
         
         SELECT COUNT(*) INTO num_remeras FROM Pedidos WHERE id_orden = NEW.id_orden;
 
@@ -115,4 +115,4 @@ BEGIN
             SET i = i + 1;
         END WHILE;
     END IF;
-END // */
+END // 

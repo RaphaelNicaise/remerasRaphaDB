@@ -769,6 +769,37 @@ BEGIN
 END //
 DELIMITER ;
 
+
+-- PRUEBA DE LOOPS PARA LA IMPLENTEACION DE QUE CADA VEZ QUE SE ENTREGA UNA ORDEN, 
+-- TODAS SUS REMERAS SE REGISTREN EN REVIEWS 
+-- (NO INCLUIDO EN EL PROYECTO FINAL)
+
+
+DELIMITER //
+CREATE TRIGGER insertar_reviews
+AFTER UPDATE ON ordenes
+FOR EACH ROW
+BEGIN
+    DECLARE i INT DEFAULT 0;
+    DECLARE remera_id INT;
+    DECLARE num_remeras INT;
+
+    IF NEW.entregado = 1 AND OLD.entregado = 0 THEN
+        
+        SELECT COUNT(*) INTO num_remeras FROM Pedidos WHERE id_orden = NEW.id_orden;
+
+        
+        WHILE i < num_remeras DO
+            SELECT id_remera INTO remera_id FROM Pedidos WHERE id_orden = NEW.id_orden LIMIT i, 1;
+
+            INSERT INTO Review (id_remera, comentario, calificacion, fecha_publicacion)
+            VALUES (remera_id, '', NULL, NOW());
+
+            SET i = i + 1;
+        END WHILE;
+    END IF;
+END //
+
 -- SCRIPT 6 PrivilegesUsers
 
 drop user if exists administracion@localhost;
@@ -834,7 +865,10 @@ INSERT INTO Color (colorObj) VALUES
   ('Amarillo'),
   ('Blanco'),
   ('Negro'),
-  ('Gris');
+  ('Gris'),
+  ('Morado'),
+  ('Cyan'),
+  ('Turquesa');
 
  
 INSERT INTO colores_elegidos (id_colores_e,id_color1,id_color2,id_color3)
