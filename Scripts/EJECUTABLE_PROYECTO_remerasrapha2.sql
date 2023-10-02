@@ -960,7 +960,7 @@ VALUES (1,1,"2023-07-24 12:34:56","Pedido para ocasion especial",1),
 	   (11,5,"2023-08-18 12:48:12","Un pedido ",0),
        (12,4,"2023-09-15 12:48:12",NULL,0),
        (13,9,"2023-09-17 18:48:12","Pedido para navidad",0),
-       (14,5,"2023-10-17 22:41:12","Pedido",0);
+       (14,5,"2023-9-17 22:41:12","Pedido",0);
        
 INSERT INTO pedidos (id_pedido,id_remera,id_orden)
 VALUES (1,1,1),
